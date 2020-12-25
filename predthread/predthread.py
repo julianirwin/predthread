@@ -5,8 +5,9 @@ from matchresult import MatchResult
 from typing import Dict
 
 class PredictionThread:
-    def __init__(self, url: str, reddit: ):
-        self._thread = reddit.submission(url=url)
+    def __init__(self, url: str, client_id: str, client_secret: str, user_agent: str):
+        reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
+        self._thread: praw.models.reddit.submission.Submission = reddit.submission(url=url)
     
     def standings(self) -> Dict[str, int]:
         return self._parse_comments()
