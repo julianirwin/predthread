@@ -1,3 +1,6 @@
+import enum
+import re
+
 class MatchResultEnum(enum.Enum):
     HOME_WIN = 0
     DRAW = 1
