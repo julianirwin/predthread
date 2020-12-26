@@ -1,27 +1,49 @@
 import praw
 from pprint import pprint
 from collections import defaultdict
-from matchresult import MatchResult
-from typing import Dict
+from .matchresult import MatchResult
+import re
+from typing import Dict, Sequence, Tuple
+
 
 class PredictionThread:
     def __init__(self, url: str, client_id: str, client_secret: str, user_agent: str):
-        reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-        self._thread: praw.models.reddit.submission.Submission = reddit.submission(url=url)
-    
-    def standings(self) -> Dict[str, int]:
+        reddit = praw.Reddit(
+            client_id=client_id, client_secret=client_secret, user_agent=user_agent
+        )
+        self._thread: praw.models.reddit.submission.Submission = reddit.submission(
+            url=url
+        )
+
+    def predictions(self) -> Dict[str, MatchResult]:
         return self._parse_comments()
 
+    def standings(self) -> Dict[str, int]:
+        return self._markdown_to_standings(self._thread.selftext)
+    
+    def updated_standings(self, home_goals, away_goals) -> Dict[str, int]:
+        true_result = MatchResult(home_goals, away_goals)
+        return self._updated_standings(
+            self.standings(), 
+            self.predictions(), 
+            true_result
+        )
+
+    def formatted_updated_standings(self):
+        pass
+
     def _strip_alphas(self, s):
-        return ''.join(list(filter(lambda x: (not x.isalpha()), s)))
+        return "".join(list(filter(lambda x: (not x.isalpha()), s)))
 
     def _parse_comments(self):
         """{author: MatchResult}"""
         predictions = {}
         for top_level_comment in self._thread.comments:
-            predictions[top_level_comment.author.name] = self._extract_prediction_from(top_level_comment.body)
+            predictions[top_level_comment.author.name] = self._extract_prediction_from(
+                top_level_comment.body
+            )
         return predictions
-            
+
     def _extract_prediction_from(self, comment_body):
         home_away_pattern = "(\d+)\s*-?\s*(\d+)"
         match = re.search(home_away_pattern, self._strip_alphas(comment_body))
@@ -30,54 +52,57 @@ class PredictionThread:
         else:
             return None
 
-def to_list_sort_by_points(standings):
-    return sorted(standings.items(), key=lambda x: x[1])[::-1]
-    
-def format_standings_list(standings_list):
-    header = "User|Points\n:--|:--|:--\n"
-    rows = ''.join([f"{author} | {points}\n" for author, points in standings_list])
-    return header + rows
+    def _markdown_to_standings(self, markdown_string: str) -> Dict[str, int]:
+        lines = markdown_string.strip().split("\n")
+        return self._standings_from_lines(self._after_header_line(lines))
 
-def without_spaces(s):
-    return ''.join(filter(lambda x: not x.isspace(), s))
+    def _after_header_line(self, lines: Sequence[str]) -> Sequence[str]:
+        if lines == []:
+            return []
+        if self._is_header_line(lines[0]):
+            return lines[2:]
+        else:
+            return self._after_header_line(lines[1:])
 
-def is_header_line(line):
-    return "User|Points" in without_spaces(line)
+    def _standings_from_lines(self, lines: Sequence[str]) -> Dict[str, int]:
+        standings = {}
+        for line in lines:
+            author, points = self._without_spaces(line).split("|")
+            standings[author] = int(points)
+        return standings
 
-def markdown_to_standings(markdown_string):
-    lines = markdown_string.split("\n")
-    return standings_from_lines(after_header_line(lines))
+    def _without_spaces(self, s):
+        return "".join(filter(lambda x: not x.isspace(), s))
 
-def after_header_line(lines):
-    if lines == []:
-        return []
-    if is_header_line(lines[0]):
-        return lines[2:]
-    else:
-        return after_header_line(lines[1:])
+    def _is_header_line(self, line):
+        return "User|Points" in self._without_spaces(line)
 
-def standings_from_lines(lines):
-    standings = {}
-    for line in lines:
-        author, points = without_spaces(line).split('|')
-        standings[author] = int(points)
-    return standings
+    def _sorted_standings_list(self, standings: Dict[str, int]) -> Sequence[tuple]:
+        return sorted(standings.items(), key=lambda x: x[1])[::-1]
 
-def points_from_results(predicted, true):
-    if predicted.exactly_equals(true):
-        return 3
-    elif predicted.same_result_as(true):
-        return 1
-    else:
-        return 0
+    def _format_standings(self, standings: Dict[str, int]):
+        sorted_standings_list = self._sorted_standings_list(standings)
+        header = "User|Points\n:--|:--|:--\n"
+        rows = "".join([f"{author} | {points}\n" for author, points in sorted_standings_list])
+        return header + rows
 
-def update_standings(standings, predictions, true_result):
-    """
-    standings {author: points}
-    predictions {author: MatchResult}
-    true_result MatchResult
-    """
-    standings = defaultdict(lambda: 0, standings)
-    for author, match_result in predictions.items():
-        standings[author] = standings[author] + points_from_results(predicted=match_result, true=true_result)
-    return dict(standings)
+    def _points_from_results(self, predicted, true):
+        if predicted.exactly_equals(true):
+            return 3
+        elif predicted.same_result_as(true):
+            return 1
+        else:
+            return 0
+
+    def _update_standings(self, standings, predictions, true_result):
+        """
+        standings {author: points}
+        predictions {author: MatchResult}
+        true_result MatchResult
+        """
+        standings = defaultdict(lambda: 0, standings)
+        for author, match_result in predictions.items():
+            standings[author] = standings[author] + points_from_results(
+                predicted=match_result, true=true_result
+            )
+        return dict(standings)

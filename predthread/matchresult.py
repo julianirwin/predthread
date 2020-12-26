@@ -33,20 +33,3 @@ class MatchResult:
     def __str__(self):
         return "<MatchResult " + str(self.as_tuple()) + " >"
     __repr__ = __str__
-
-
-def strip_alphas(s):
-    return ''.join(list(filter(lambda x: (not x.isalpha()), s)))
-
-def parse_comments(predthread):
-    """{author: MatchResult}"""
-    predictions = {}
-    for top_level_comment in predthread.comments:
-        predictions[top_level_comment.author.name] = extract_prediction_from(top_level_comment.body)
-    return predictions
-        
-def extract_prediction_from(comment_body):
-    home_away_pattern = "(\d+)\s*-?\s*(\d+)"
-    match = re.search(home_away_pattern, strip_alphas(comment_body))
-    if match:
-        return MatchResult(*map(int, match.groups()))
