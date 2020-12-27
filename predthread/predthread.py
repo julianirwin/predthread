@@ -4,6 +4,7 @@ from collections import defaultdict
 from .matchresult import MatchResult
 import re
 from typing import Dict, Sequence, Tuple
+from tabulate import tabulate
 
 
 class PredictionThread:
@@ -29,8 +30,28 @@ class PredictionThread:
             true_result
         )
 
-    def formatted_updated_standings(self):
-        pass
+    def standings_as_markdown(self):
+        return self._format_standings_as_markdown(self.standings())
+
+    def updated_standings_as_markdown(self, home_goals, away_goals):
+        return self._format_standings_as_markdown(self.updated_standings(home_goals, away_goals))
+    
+    def standings_predictions_updates_table(self, home_goals, away_goals):
+        standings = defaultdict(lambda: 0, self.standings())
+        predictions = defaultdict(lambda: None, self.predictions())
+        updated_standings = self.updated_standings(home_goals, away_goals)
+        table = []
+        for a in updated_standings.keys():
+            table.append(
+                (a, standings[a], predictions[a], updated_standings[a] - standings[a], updated_standings[a])
+            )
+        return sorted(table, key=lambda x: x[4])[::-1]
+    
+    def standings_predictions_updates_table_tabulated(self, home_goals, away_goals):
+        table_body = self.standings_predictions_updates_table(home_goals, away_goals)
+        headers = ["User", "Standings", "Prediction", "Earned", "Updated Standings"]
+        return tabulate(table_body, headers=headers)
+
 
     def _strip_alphas(self, s):
         return "".join(list(filter(lambda x: (not x.isalpha()), s)))
@@ -80,7 +101,7 @@ class PredictionThread:
     def _sorted_standings_list(self, standings: Dict[str, int]) -> Sequence[tuple]:
         return sorted(standings.items(), key=lambda x: x[1])[::-1]
 
-    def _format_standings(self, standings: Dict[str, int]):
+    def _format_standings_as_markdown(self, standings: Dict[str, int]):
         sorted_standings_list = self._sorted_standings_list(standings)
         header = "User|Points\n:--|:--|:--\n"
         rows = "".join([f"{author} | {points}\n" for author, points in sorted_standings_list])
@@ -94,7 +115,7 @@ class PredictionThread:
         else:
             return 0
 
-    def _update_standings(self, standings, predictions, true_result):
+    def _updated_standings(self, standings, predictions, true_result):
         """
         standings {author: points}
         predictions {author: MatchResult}
@@ -102,7 +123,7 @@ class PredictionThread:
         """
         standings = defaultdict(lambda: 0, standings)
         for author, match_result in predictions.items():
-            standings[author] = standings[author] + points_from_results(
+            standings[author] = standings[author] + self._points_from_results(
                 predicted=match_result, true=true_result
             )
         return dict(standings)

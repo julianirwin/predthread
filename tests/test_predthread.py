@@ -78,22 +78,40 @@ class TestPredictionThread:
         assert predictions['DrShaftmanPhD'].exactly_equals(MatchResult(2, 1))
         assert predictions['Siteyaself'].exactly_equals(MatchResult(1, 2))
         assert predictions['kyleandrew_7'].exactly_equals(MatchResult(2, 2))
+        assert "walterrobot" not in predictions.keys()
 
     def test_standings(self, predthread):
         standings = predthread.standings()
         assert standings["DrShaftmanPhD"] == 13
-        assert standings["docdope"] == 12
-        assert standings["Calkra"] == 9
-        assert standings["fricknuggetland"] == 7
-        assert standings["meteoritee"] == 7
+        assert standings["cbeaz17"] == 10
+        assert standings["MyoMike"] == 11
+        assert standings["Siteyaself"] == 6
+        assert standings["kyleandrew_7"] == 4
         assert standings["walterrobot"] == 1
+        assert 'K3GGY' not in standings.keys()
+    
+    def test_updated_standings(self, predthread):
+        updated_standings = predthread.updated_standings(0, 1)
+        assert updated_standings["DrShaftmanPhD"] == 13
+        assert updated_standings["cbeaz17"] == 10
+        assert updated_standings["MyoMike"] == 12
+        assert updated_standings["Siteyaself"] == 7
+        assert updated_standings["kyleandrew_7"] == 4
+        assert updated_standings["walterrobot"] == 1
+        assert updated_standings['K3GGY'] == 0
+
+    def test_table(self, predthread):
+        predthread.standings_predictions_updates_table(0, 1)
+
+    def test_table_tabulated(self, predthread):
+        predthread.standings_predictions_updates_table_tabulated(0, 1)
     
     def test_example_standings(self, predthread):
         assert predthread._markdown_to_standings(EXAMPLE_SELF_TEXT) == EXAMPLE_SELF_TEXT_STANDINGS
 
     def test_example_standings_formatted(self, predthread):
         standings = predthread._markdown_to_standings(EXAMPLE_SELF_TEXT)
-        formatted_standings_list = predthread._format_standings(standings)
+        formatted_standings_list = predthread._format_standings_as_markdown(standings)
         assert formatted_standings_list.strip() == EXAMPLE_SELF_TEXT_FORMATTED_OUTPUT.strip()
     
     def test_points_from_match_results(self, predthread, predictions_and_points):

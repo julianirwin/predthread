@@ -30,6 +30,8 @@ class MatchResult:
     def as_tuple(self):
         return (self.home_goals, self.away_goals)
     
-    def __str__(self):
+    def __repr__(self):
         return "<MatchResult " + str(self.as_tuple()) + " >"
-    __repr__ = __str__
+
+    def __str__(self):
+        return str(self.as_tuple())
