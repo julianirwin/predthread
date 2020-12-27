@@ -6,7 +6,6 @@ import re
 from typing import Dict, Sequence, Tuple
 from tabulate import tabulate
 
-
 class PredictionThread:
     def __init__(self, url: str, client_id: str, client_secret: str, user_agent: str):
         reddit = praw.Reddit(
@@ -22,24 +21,25 @@ class PredictionThread:
     def standings(self) -> Dict[str, int]:
         return self._markdown_to_standings(self._thread.selftext)
     
-    def updated_standings(self, home_goals, away_goals) -> Dict[str, int]:
+    def updated_standings(self, home_goals, away_goals, nonzero=False) -> Dict[str, int]:
         true_result = MatchResult(home_goals, away_goals)
         return self._updated_standings(
             self.standings(), 
             self.predictions(), 
-            true_result
+            true_result,
+            nonzero
         )
 
     def standings_as_markdown(self):
         return self._format_standings_as_markdown(self.standings())
 
-    def updated_standings_as_markdown(self, home_goals, away_goals):
-        return self._format_standings_as_markdown(self.updated_standings(home_goals, away_goals))
+    def updated_standings_as_markdown(self, home_goals, away_goals, nonzero=False):
+        return self._format_standings_as_markdown(self.updated_standings(home_goals, away_goals, nonzero))
     
-    def standings_predictions_updates_table(self, home_goals, away_goals):
+    def standings_predictions_updates_table(self, home_goals, away_goals, nonzero=False):
         standings = defaultdict(lambda: 0, self.standings())
         predictions = defaultdict(lambda: None, self.predictions())
-        updated_standings = self.updated_standings(home_goals, away_goals)
+        updated_standings = self.updated_standings(home_goals, away_goals, nonzero)
         table = []
         for a in updated_standings.keys():
             table.append(
@@ -47,8 +47,8 @@ class PredictionThread:
             )
         return sorted(table, key=lambda x: x[4])[::-1]
     
-    def standings_predictions_updates_table_tabulated(self, home_goals, away_goals):
-        table_body = self.standings_predictions_updates_table(home_goals, away_goals)
+    def standings_predictions_updates_table_tabulated(self, home_goals, away_goals, nonzero=False):
+        table_body = self.standings_predictions_updates_table(home_goals, away_goals, nonzero)
         headers = ["User", "Standings", "Prediction", "Earned", "Updated Standings"]
         return tabulate(table_body, headers=headers)
 
@@ -60,6 +60,8 @@ class PredictionThread:
         """{author: MatchResult}"""
         predictions = {}
         for top_level_comment in self._thread.comments:
+            if top_level_comment.author is None:
+                continue
             predictions[top_level_comment.author.name] = self._extract_prediction_from(
                 top_level_comment.body
             )
@@ -108,14 +110,16 @@ class PredictionThread:
         return header + rows
 
     def _points_from_results(self, predicted, true):
-        if predicted.exactly_equals(true):
+        if not predicted:
+            return 0
+        elif predicted.exactly_equals(true):
             return 3
         elif predicted.same_result_as(true):
             return 1
         else:
             return 0
 
-    def _updated_standings(self, standings, predictions, true_result):
+    def _updated_standings(self, standings, predictions, true_result, nonzero=False):
         """
         standings {author: points}
         predictions {author: MatchResult}
@@ -126,4 +130,6 @@ class PredictionThread:
             standings[author] = standings[author] + self._points_from_results(
                 predicted=match_result, true=true_result
             )
+        if nonzero:
+            standings = {k: v for k, v in standings.items() if v > 0}
         return dict(standings)

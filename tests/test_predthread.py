@@ -117,3 +117,21 @@ class TestPredictionThread:
     def test_points_from_match_results(self, predthread, predictions_and_points):
         predicted, true, points = predictions_and_points
         assert predthread._points_from_results(predicted, true) == points
+    
+    def test_extract_prediction(self, predthread):
+        assert MatchResult(1,1).exactly_equals(predthread._extract_prediction_from("1-1"))
+        assert MatchResult(1,1).exactly_equals(predthread._extract_prediction_from("1 - 1"))
+        assert MatchResult(1,1).exactly_equals(predthread._extract_prediction_from("asdf 1 asdf - asdf 1 asdf"))
+        assert predthread._extract_prediction_from("asdf") is None
+
+URL_WEEK1_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/iqqvpq/prediction_thread_week_1/"
+
+def test_week_one_2020():
+    pt = PredictionThread(
+        url=URL_WEEK1_2020_21,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent
+    )
+    assert pt.standings() == {}
+    # assert pt.updated_standings(1, 0)
