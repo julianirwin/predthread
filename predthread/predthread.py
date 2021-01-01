@@ -9,13 +9,19 @@ from tabulate import tabulate
 
 class PredictionThread:
     def __init__(
-        self, home_goals: int, away_goals: int, url: str, client_id: str, client_secret: str, user_agent: str
+        self,
+        home_goals: int,
+        away_goals: int,
+        url: str,
+        client_id: str,
+        client_secret: str,
+        user_agent: str,
     ):
-        reddit = praw.Reddit(
+        self._reddit = praw.Reddit(
             client_id=client_id, client_secret=client_secret, user_agent=user_agent
         )
-        self._thread: praw.models.reddit.submission.Submission = reddit.submission(
-            url=url
+        self._thread: praw.models.reddit.submission.Submission = (
+            self._reddit.submission(url=url)
         )
         self._home_goals = home_goals
         self._away_goals = away_goals
@@ -26,9 +32,7 @@ class PredictionThread:
     def standings(self) -> Dict[str, int]:
         return self._markdown_to_standings(self._thread.selftext)
 
-    def updated_standings(
-        self, nonzero=False
-    ) -> Dict[str, int]:
+    def updated_standings(self, nonzero=False) -> Dict[str, int]:
         true_result = MatchResult(self._home_goals, self._away_goals)
         return self._updated_standings(
             self.standings(), self.predictions(), true_result, nonzero
@@ -38,13 +42,9 @@ class PredictionThread:
         return self._format_standings_as_markdown(self.standings())
 
     def updated_standings_as_markdown(self, nonzero=False):
-        return self._format_standings_as_markdown(
-            self.updated_standings(nonzero)
-        )
+        return self._format_standings_as_markdown(self.updated_standings(nonzero))
 
-    def standings_predictions_updates_table(
-        self, nonzero=False
-    ):
+    def standings_predictions_updates_table(self, nonzero=False):
         standings = defaultdict(lambda: 0, self.standings())
         predictions = defaultdict(lambda: None, self.predictions())
         updated_standings = self.updated_standings(nonzero)
@@ -61,13 +61,27 @@ class PredictionThread:
             )
         return sorted(table, key=lambda x: x[4])[::-1]
 
-    def standings_predictions_updates_table_tabulated(
-        self, nonzero=False
-    ):
-        table_body = self.standings_predictions_updates_table(
-            nonzero
-        )
+    def standings_predictions_updates_table_tabulated(self, nonzero=False):
+        table_body = self.standings_predictions_updates_table(nonzero)
         headers = ["User", "Standings", "Prediction", "Earned", "Updated Standings"]
+        return tabulate(table_body, headers=headers)
+
+    def compare_to_next_week(self, next_week_url, nonzero=False):
+        table_this_week = self.standings_predictions_updates_table(nonzero=nonzero)
+        thread_next_week = self._reddit.submission(url=next_week_url)
+        standings_next_week = self._markdown_to_standings(thread_next_week.selftext)
+        table_this_week = {row[0]: row[1:] for row in table_this_week}
+        for author, points in standings_next_week.items():
+            table_this_week[author] = table_this_week[author] + (
+                points,
+                points == table_this_week[author][-1],
+            )
+        table = [(k, *v) for k, v in table_this_week.items()]
+        return table
+
+    def compare_to_next_week_tabulated(self, next_week_url, nonzero=False):
+        table_body = self.compare_to_next_week(next_week_url, nonzero)
+        headers = ["User", "Standings", "Prediction", "Earned", "Updated Standings", "Standings (Next Weeks Thread)", "Match?"]
         return tabulate(table_body, headers=headers)
 
     def _strip_alphas(self, s):

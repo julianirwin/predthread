@@ -3,6 +3,8 @@ from pytest import fixture
 from api import client_id, client_secret, user_agent
 
 URL_WEEK14_2020_21 =  "https://www.reddit.com/r/SaintsFC/comments/kf40c7/prediction_thread_week_14/"
+URL_WEEK15_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kjn9iv/prediction_thread_week_15/" # 0-0
+URL_WEEK16_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/klehj8/prediction_thread_week_16/" # 0-0
 
 EXAMPLE_SELF_TEXT = """
 Man City at St. Mary's
@@ -46,6 +48,17 @@ def predthread() -> PredictionThread:
         home_goals=0,
         away_goals=1,
         url=URL_WEEK14_2020_21,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent
+    )
+
+@fixture(scope="module")
+def predthread15() -> PredictionThread:
+    return PredictionThread(
+        home_goals=0,
+        away_goals=0,
+        url=URL_WEEK15_2020_21,
         client_id=client_id,
         client_secret=client_secret,
         user_agent=user_agent
@@ -138,4 +151,16 @@ def test_week_one_2020():
         user_agent=user_agent
     )
     assert pt.standings() == {}
-    # assert pt.updated_standings(1, 0)
+
+def test_week_15_2020():
+    pt = PredictionThread(
+        home_goals=0,
+        away_goals=0,
+        url=URL_WEEK15_2020_21,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent
+    )
+    comparison_table = pt.compare_to_next_week(next_week_url=URL_WEEK16_2020_21, nonzero=True)
+    for row in comparison_table:
+        assert row[-1]
