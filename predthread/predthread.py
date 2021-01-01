@@ -6,52 +6,69 @@ import re
 from typing import Dict, Sequence, Tuple
 from tabulate import tabulate
 
+
 class PredictionThread:
-    def __init__(self, url: str, client_id: str, client_secret: str, user_agent: str):
+    def __init__(
+        self, home_goals: int, away_goals: int, url: str, client_id: str, client_secret: str, user_agent: str
+    ):
         reddit = praw.Reddit(
             client_id=client_id, client_secret=client_secret, user_agent=user_agent
         )
         self._thread: praw.models.reddit.submission.Submission = reddit.submission(
             url=url
         )
+        self._home_goals = home_goals
+        self._away_goals = away_goals
 
     def predictions(self) -> Dict[str, MatchResult]:
         return self._parse_comments()
 
     def standings(self) -> Dict[str, int]:
         return self._markdown_to_standings(self._thread.selftext)
-    
-    def updated_standings(self, home_goals, away_goals, nonzero=False) -> Dict[str, int]:
-        true_result = MatchResult(home_goals, away_goals)
+
+    def updated_standings(
+        self, nonzero=False
+    ) -> Dict[str, int]:
+        true_result = MatchResult(self._home_goals, self._away_goals)
         return self._updated_standings(
-            self.standings(), 
-            self.predictions(), 
-            true_result,
-            nonzero
+            self.standings(), self.predictions(), true_result, nonzero
         )
 
     def standings_as_markdown(self):
         return self._format_standings_as_markdown(self.standings())
 
-    def updated_standings_as_markdown(self, home_goals, away_goals, nonzero=False):
-        return self._format_standings_as_markdown(self.updated_standings(home_goals, away_goals, nonzero))
-    
-    def standings_predictions_updates_table(self, home_goals, away_goals, nonzero=False):
+    def updated_standings_as_markdown(self, nonzero=False):
+        return self._format_standings_as_markdown(
+            self.updated_standings(nonzero)
+        )
+
+    def standings_predictions_updates_table(
+        self, nonzero=False
+    ):
         standings = defaultdict(lambda: 0, self.standings())
         predictions = defaultdict(lambda: None, self.predictions())
-        updated_standings = self.updated_standings(home_goals, away_goals, nonzero)
+        updated_standings = self.updated_standings(nonzero)
         table = []
         for a in updated_standings.keys():
             table.append(
-                (a, standings[a], predictions[a], updated_standings[a] - standings[a], updated_standings[a])
+                (
+                    a,
+                    standings[a],
+                    predictions[a],
+                    updated_standings[a] - standings[a],
+                    updated_standings[a],
+                )
             )
         return sorted(table, key=lambda x: x[4])[::-1]
-    
-    def standings_predictions_updates_table_tabulated(self, home_goals, away_goals, nonzero=False):
-        table_body = self.standings_predictions_updates_table(home_goals, away_goals, nonzero)
+
+    def standings_predictions_updates_table_tabulated(
+        self, nonzero=False
+    ):
+        table_body = self.standings_predictions_updates_table(
+            nonzero
+        )
         headers = ["User", "Standings", "Prediction", "Earned", "Updated Standings"]
         return tabulate(table_body, headers=headers)
-
 
     def _strip_alphas(self, s):
         return "".join(list(filter(lambda x: (not x.isalpha()), s)))
@@ -106,7 +123,9 @@ class PredictionThread:
     def _format_standings_as_markdown(self, standings: Dict[str, int]):
         sorted_standings_list = self._sorted_standings_list(standings)
         header = "User|Points\n:--|:--|:--\n"
-        rows = "".join([f"{author} | {points}\n" for author, points in sorted_standings_list])
+        rows = "".join(
+            [f"{author} | {points}\n" for author, points in sorted_standings_list]
+        )
         return header + rows
 
     def _points_from_results(self, predicted, true):

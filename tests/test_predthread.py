@@ -43,6 +43,8 @@ cbeaz17 | 10"""
 @fixture(scope="module")
 def predthread() -> PredictionThread:
     return PredictionThread(
+        home_goals=0,
+        away_goals=1,
         url=URL_WEEK14_2020_21,
         client_id=client_id,
         client_secret=client_secret,
@@ -91,7 +93,7 @@ class TestPredictionThread:
         assert 'K3GGY' not in standings.keys()
     
     def test_updated_standings(self, predthread):
-        updated_standings = predthread.updated_standings(0, 1)
+        updated_standings = predthread.updated_standings()
         assert updated_standings["DrShaftmanPhD"] == 13
         assert updated_standings["cbeaz17"] == 10
         assert updated_standings["MyoMike"] == 12
@@ -101,10 +103,10 @@ class TestPredictionThread:
         assert updated_standings['K3GGY'] == 0
 
     def test_table(self, predthread):
-        predthread.standings_predictions_updates_table(0, 1)
+        predthread.standings_predictions_updates_table()
 
     def test_table_tabulated(self, predthread):
-        predthread.standings_predictions_updates_table_tabulated(0, 1)
+        predthread.standings_predictions_updates_table_tabulated()
     
     def test_example_standings(self, predthread):
         assert predthread._markdown_to_standings(EXAMPLE_SELF_TEXT) == EXAMPLE_SELF_TEXT_STANDINGS
@@ -128,6 +130,8 @@ URL_WEEK1_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/iqqvpq/predictio
 
 def test_week_one_2020():
     pt = PredictionThread(
+        home_goals=0,
+        away_goals=0,
         url=URL_WEEK1_2020_21,
         client_id=client_id,
         client_secret=client_secret,
