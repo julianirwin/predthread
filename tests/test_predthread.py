@@ -2,7 +2,10 @@ from predthread import PredictionThread, MatchResult
 from pytest import fixture
 from api import client_id, client_secret, user_agent
 
-URL_WEEK14_2020_21 =  "https://www.reddit.com/r/SaintsFC/comments/kf40c7/prediction_thread_week_14/"
+URL_WEEK1_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/iqqvpq/prediction_thread_week_1/" # 1-0
+URL_WEEK3_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/izlj8n/prediction_thread_week_3/" # 0-1
+URL_WEEK13_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kdbs8j/prediction_thread_week_13/" # 1-1
+URL_WEEK14_2020_21 =  "https://www.reddit.com/r/SaintsFC/comments/kf40c7/prediction_thread_week_14/" # 0-1
 URL_WEEK15_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kjn9iv/prediction_thread_week_15/" # 0-0
 URL_WEEK16_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/klehj8/prediction_thread_week_16/" # 0-0
 
@@ -164,3 +167,17 @@ def test_week_15_2020():
     comparison_table = pt.compare_to_next_week(next_week_url=URL_WEEK16_2020_21, nonzero=True)
     for row in comparison_table:
         assert row[-1]
+
+def test_week_13_2020():
+    pt = PredictionThread(
+        home_goals=1,
+        away_goals=1,
+        url=URL_WEEK13_2020_21,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent
+    )
+    comparison_table = pt.compare_to_next_week(next_week_url=URL_WEEK14_2020_21, nonzero=True)
+    for row in comparison_table:
+        if row[-1] is not None:
+            assert row[-1]
