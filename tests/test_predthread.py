@@ -2,12 +2,15 @@ from predthread import PredictionThread, MatchResult
 from pytest import fixture
 from api import client_id, client_secret, user_agent
 
-URL_WEEK1_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/iqqvpq/prediction_thread_week_1/" # 1-0
-URL_WEEK3_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/izlj8n/prediction_thread_week_3/" # 0-1
-URL_WEEK13_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kdbs8j/prediction_thread_week_13/" # 1-1
-URL_WEEK14_2020_21 =  "https://www.reddit.com/r/SaintsFC/comments/kf40c7/prediction_thread_week_14/" # 0-1
-URL_WEEK15_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kjn9iv/prediction_thread_week_15/" # 0-0
-URL_WEEK16_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/klehj8/prediction_thread_week_16/" # 0-0
+URL_WEEK1_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/iqqvpq/prediction_thread_week_1/" # 1-0 A
+URL_WEEK3_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/izlj8n/prediction_thread_week_3/" # 0-1 A
+URL_WEEK10_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/k2exmx/prediction_thread_week_10/" # 2-3 H
+URL_WEEK11_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/k79l93/prediction_thread_week_11/" # 1-2 A
+URL_WEEK12_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kbl1um/prediction_thread_week_12/" # 3-0 H
+URL_WEEK13_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kdbs8j/prediction_thread_week_13/" # 1-1 A
+URL_WEEK14_2020_21 =  "https://www.reddit.com/r/SaintsFC/comments/kf40c7/prediction_thread_week_14/" # 0-1 H
+URL_WEEK15_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/kjn9iv/prediction_thread_week_15/" # 0-0 A
+URL_WEEK16_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/klehj8/prediction_thread_week_16/" # 0-0 H
 
 EXAMPLE_SELF_TEXT = """
 Man City at St. Mary's
@@ -50,6 +53,7 @@ def predthread() -> PredictionThread:
     return PredictionThread(
         home_goals=0,
         away_goals=1,
+        saints_are_home=True,
         url=URL_WEEK14_2020_21,
         client_id=client_id,
         client_secret=client_secret,
@@ -61,7 +65,20 @@ def predthread15() -> PredictionThread:
     return PredictionThread(
         home_goals=0,
         away_goals=0,
+        saints_are_home=False,
         url=URL_WEEK15_2020_21,
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent
+    )
+
+@fixture(scope="module")
+def predthread11() -> PredictionThread:
+    return PredictionThread(
+        home_goals=1,
+        away_goals=2,
+        saints_are_home=False,
+        url=URL_WEEK11_2020_21,
         client_id=client_id,
         client_secret=client_secret,
         user_agent=user_agent
@@ -83,6 +100,22 @@ def predictions_and_points(request):
     true = request.param[0][1]
     points = request.param[1]
     return predicted, true, points
+
+
+# Result (home-away), "comment string", saints_are_home
+extraction_cases = (
+    ((1, 1), "1-1", True),
+    ((1, 1), "1 - 1", True),
+    ((1, 1), "asdf 1 - 1 asdf", True),
+    ((2, 1), "asdf 2 - 1 asdf", True),
+    ((2, 1), "2 asdf 1 asdf", True),
+    ((0, 3), "3 - 0 saints", False),
+    ((0, 3), "3 - 0 southampton", False),
+    ((0, 3), "3 - 0 us", False)
+)
+@fixture(params=extraction_cases)
+def extraction_case(request):
+    return MatchResult(*request.param[0]), request.param[1], request.param[2]
 
 class TestPredictionThread:
     def test_init(self, predthread):
@@ -136,11 +169,10 @@ class TestPredictionThread:
         predicted, true, points = predictions_and_points
         assert predthread._points_from_results(predicted, true) == points
     
-    def test_extract_prediction(self, predthread):
-        assert MatchResult(1,1).exactly_equals(predthread._extract_prediction_from("1-1"))
-        assert MatchResult(1,1).exactly_equals(predthread._extract_prediction_from("1 - 1"))
-        assert MatchResult(1,1).exactly_equals(predthread._extract_prediction_from("asdf 1 asdf - asdf 1 asdf"))
-        assert predthread._extract_prediction_from("asdf") is None
+    def test_extract_prediction(self, predthread, extraction_case):
+        correctly_extracted_match_result, comment_body, saints_are_home = extraction_case
+        extracted_match_result = predthread._extract_prediction_from(comment_body, saints_are_home=saints_are_home)
+        assert correctly_extracted_match_result.exactly_equals(extracted_match_result)
 
 URL_WEEK1_2020_21 = "https://www.reddit.com/r/SaintsFC/comments/iqqvpq/prediction_thread_week_1/"
 
@@ -148,6 +180,7 @@ def test_week_one_2020():
     pt = PredictionThread(
         home_goals=0,
         away_goals=0,
+        saints_are_home=False,
         url=URL_WEEK1_2020_21,
         client_id=client_id,
         client_secret=client_secret,
@@ -159,6 +192,7 @@ def test_week_15_2020():
     pt = PredictionThread(
         home_goals=0,
         away_goals=0,
+        saints_are_home=False,
         url=URL_WEEK15_2020_21,
         client_id=client_id,
         client_secret=client_secret,
@@ -172,6 +206,7 @@ def test_week_13_2020():
     pt = PredictionThread(
         home_goals=1,
         away_goals=1,
+        saints_are_home=False,
         url=URL_WEEK13_2020_21,
         client_id=client_id,
         client_secret=client_secret,

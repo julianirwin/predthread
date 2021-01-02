@@ -12,6 +12,7 @@ class PredictionThread:
         self,
         home_goals: int,
         away_goals: int,
+        saints_are_home: bool,
         url: str,
         client_id: str,
         client_secret: str,
@@ -25,6 +26,7 @@ class PredictionThread:
         )
         self._home_goals = home_goals
         self._away_goals = away_goals
+        self._saints_are_home = saints_are_home
 
     def predictions(self) -> Dict[str, MatchResult]:
         return self._parse_comments()
@@ -94,11 +96,42 @@ class PredictionThread:
             if top_level_comment.author is None:
                 continue
             predictions[top_level_comment.author.name] = self._extract_prediction_from(
-                top_level_comment.body
+                top_level_comment.body,
+                self._saints_are_home
             )
         return predictions
 
-    def _extract_prediction_from(self, comment_body):
+    def _extract_prediction_from(self, comment_body, saints_are_home):
+        # home_away_pattern = "(\d+)\s*-?\s*(\d+)"
+        # match = re.search(home_away_pattern, self._strip_alphas(comment_body))
+        # if match:
+        #     return MatchResult(*map(int, match.groups()))
+        # else:
+        #     return None
+        s = comment_body.lower()
+        reverse_if_saints_away = 1 if saints_are_home else -1
+
+        # Catches the <team1> <score1> <team2> <score2> used by those who don't trust that
+        # the game organizer can figure out home - away without labels...      
+        reverse_explicit_pattern = "(southampton|saints|us)\s*(\d+)\s*-?\s*[\w\s]*(\d+)"
+        match = re.search(reverse_explicit_pattern, s)
+        if match:
+            return MatchResult(*(int(match.groups()[1]), int(match.groups()[2]))[::reverse_if_saints_away])
+
+        # Catches the <score1> <team1> <score2> <team2> used by those who don't trust that
+        # the game organizer can figure out home - away without labels...
+        forward_explicit_pattern = "(\d+)\s*(southampton|saints|us)\s*-?\s*(\d+)"
+        match = re.search(forward_explicit_pattern, s)
+        if match:
+            return MatchResult(*(int(match.groups()[0]), int(match.groups()[2]))[::reverse_if_saints_away])
+        
+        # Catches the <score> <winner> format commonly used in english
+        reversed_pattern = "(\d+)\s*-?\s*(\d+)\s*(saints|southampton|us|win|easy win)"
+        match = re.search(reversed_pattern, s)
+        if match:
+            return MatchResult(*(int(match.groups()[0]), int(match.groups()[1]))[::reverse_if_saints_away])
+        
+        # Home - away format. As requested!
         home_away_pattern = "(\d+)\s*-?\s*(\d+)"
         match = re.search(home_away_pattern, self._strip_alphas(comment_body))
         if match:
