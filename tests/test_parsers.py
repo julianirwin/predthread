@@ -24,17 +24,18 @@ def test_first_two_ints_in_comment(comment_case):
 
 
 labelled_self_texts = (
-    {
-        "mcsgwigga": 14,
-        "BlameTibor": 13,
-        "Seph_che": 13,
-        "Cervix-Pounder": 12,
-        "Zou-KaiLi": 12,
-        "TheFuzzyEucalyptus": 11,
-        "oldredstang66": 11,
-        "lakermamba1999": 10,
-    },
-    """
+    (
+        {
+            "mcsgwigga": 14,
+            "BlameTibor": 13,
+            "Seph_che": 13,
+            "Cervix-Pounder": 12,
+            "Zou-KaiLi": 12,
+            "TheFuzzyEucalyptus": 11,
+            "oldredstang66": 11,
+            "lakermamba1999": 10,
+        },
+        """
     # Home - Away Format
 
     Comment like "2 - 1. ⛏️⛏️⛏️"
@@ -54,8 +55,10 @@ labelled_self_texts = (
     oldredstang66 | 11
     lakermamba1999 | 10
     """,
+    ),
 )
 
-@pytest.mark.parametrize("standing_dict,self_text", labelled_self_texts)
+
+@pytest.mark.parametrize("standings_dict,self_text", labelled_self_texts)
 def test_standings_dict_from_self_text(standings_dict, self_text):
     assert standings_dict_from_self_text(self_text) == standings_dict
