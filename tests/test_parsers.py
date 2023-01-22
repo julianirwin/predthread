@@ -1,7 +1,7 @@
 import pytest
 from pytest import fixture
 
-from predthread.parsers import first_two_ints_in_comment, standings_dict_from_self_text
+from predthread.parse import first_two_ints_in_comment, standings_dict_from_self_text
 
 __author__ = "Julian"
 __copyright__ = "Julian"

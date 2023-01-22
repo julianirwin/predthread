@@ -15,4 +15,5 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-from .parsers import first_two_ints_in_comment, standings_dict_from_self_text
+from .parse import first_two_ints_in_comment, standings_dict_from_self_text
+from .match_result import MatchResult
