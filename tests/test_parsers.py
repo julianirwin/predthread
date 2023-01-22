@@ -13,16 +13,28 @@ labelled_comments = (
     ((3, 0), "Everton 3 Saints 0"),
 )
 
+
 @fixture(params=labelled_comments)
 def comment_case(request):
     return {"correct_ints": request.param[0], "comment_text": request.param[1]}
+
 
 def test_first_two_ints_in_comment(comment_case):
     assert first_two_ints_in_comment(comment_case["comment_text"]) == comment_case["correct_ints"]
 
 
-def test_standings_dict_from_self_text():
-    markdown_str = """
+labelled_self_texts = (
+    {
+        "mcsgwigga": 14,
+        "BlameTibor": 13,
+        "Seph_che": 13,
+        "Cervix-Pounder": 12,
+        "Zou-KaiLi": 12,
+        "TheFuzzyEucalyptus": 11,
+        "oldredstang66": 11,
+        "lakermamba1999": 10,
+    },
+    """
     # Home - Away Format
 
     Comment like "2 - 1. ⛏️⛏️⛏️"
@@ -41,15 +53,9 @@ def test_standings_dict_from_self_text():
     TheFuzzyEucalyptus | 11
     oldredstang66 | 11
     lakermamba1999 | 10
-    """
-    standings = {
-        "mcsgwigga": 14,
-        "BlameTibor": 13,
-        "Seph_che": 13,
-        "Cervix-Pounder": 12,
-        "Zou-KaiLi": 12,
-        "TheFuzzyEucalyptus": 11,
-        "oldredstang66": 11,
-        "lakermamba1999": 10,
-    }
-    assert standings_dict_from_self_text(markdown_str) == standings
+    """,
+)
+
+@pytest.mark.parametrize("standing_dict,self_text", labelled_self_texts)
+def test_standings_dict_from_self_text(standings_dict, self_text):
+    assert standings_dict_from_self_text(self_text) == standings_dict
