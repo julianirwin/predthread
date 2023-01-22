@@ -15,14 +15,11 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
+from .predthread import get_predictions, get_standings
 from . import parse
+from . import reddit
 from .match_result import MatchResult
 from .reddit import (
     open_thread,
-    thread_top_level_comments,
-    thread_self_text,
     open_reddit,
-    filtered_comments,
-    comment_created_before,
-    comment_author_not_none,
 )

@@ -29,22 +29,5 @@ def thread_top_level_comments(thread) -> Sequence:
     return thread.comments
 
 
-def comment_author_not_none(comment) -> bool:
-    return comment.author is not None
-
-
-def comment_created_before(threshold_datetime, comment) -> bool:
-    comment_time = threshold_datetime.fromtimestamp(comment.created_utc)
-    return comment_time <= threshold_datetime
-
-
-def filtered_comments(comments: Sequence[Comment], *args):
-    """
-    args are functions that take a comment and return a bool.
-    """
-    def f_filter(c):
-       return reduce(and_, tuple(f(c) for f in args)) 
-    return filter(f_filter, comments)
-
 def comments_dict(comments: Sequence[Comment]) -> dict[str, str]:
     return {c.author.name: c.body for c in comments}
