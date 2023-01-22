@@ -15,6 +15,14 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-from .parse import first_two_ints_in_comment, standings_dict_from_self_text
+from . import parse
 from .match_result import MatchResult
-from .reddit import open_thread, thread_top_level_comments, thread_self_text, open_reddit, filtered_comments, comment_created_before, comment_author_not_none
+from .reddit import (
+    open_thread,
+    thread_top_level_comments,
+    thread_self_text,
+    open_reddit,
+    filtered_comments,
+    comment_created_before,
+    comment_author_not_none,
+)

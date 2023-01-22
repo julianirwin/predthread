@@ -1,8 +1,23 @@
+"""
+Funcitons associated with parsing text into data
+"""
+
+
 import re
 from typing import Optional, Sequence
 
+from .match_result import MatchResult
 
-def first_two_ints_in_comment(comment: str) -> Optional[tuple[int]]:
+
+def predictions(comments: dict[str, str]):
+    return {username: _predicted_match_result(comment) for username, comment in comments.items()}
+
+
+def _predicted_match_result(comment: str) -> MatchResult:
+    return MatchResult(*_first_two_ints_in_comment(comment))
+
+
+def _first_two_ints_in_comment(comment: str) -> Optional[tuple[int]]:
     ints_in_comment = re.findall("(\d+)", comment)
     if len(ints_in_comment) < 2:
         return None
@@ -10,8 +25,8 @@ def first_two_ints_in_comment(comment: str) -> Optional[tuple[int]]:
         return tuple(int(x) for x in ints_in_comment[:2])
 
 
-def standings_dict_from_self_text(markdown_string: str) -> dict[str, int]:
-    lines = markdown_string.strip().split("\n")
+def standings(self_text: str) -> dict[str, int]:
+    lines = self_text.strip().split("\n")
     return _standings_from_lines(_after_header_line(lines))
 
 

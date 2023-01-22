@@ -1,7 +1,7 @@
 import pytest
 from pytest import fixture
 
-from predthread.parse import first_two_ints_in_comment, standings_dict_from_self_text
+from predthread.parse import _first_two_ints_in_comment, standings
 
 __author__ = "Julian"
 __copyright__ = "Julian"
@@ -20,7 +20,7 @@ def comment_case(request):
 
 
 def test_first_two_ints_in_comment(comment_case):
-    assert first_two_ints_in_comment(comment_case["comment_text"]) == comment_case["correct_ints"]
+    assert _first_two_ints_in_comment(comment_case["comment_text"]) == comment_case["correct_ints"]
 
 
 labelled_self_texts = (
@@ -61,4 +61,4 @@ labelled_self_texts = (
 
 @pytest.mark.parametrize("standings_dict,self_text", labelled_self_texts)
 def test_standings_dict_from_self_text(standings_dict, self_text):
-    assert standings_dict_from_self_text(self_text) == standings_dict
+    assert standings(self_text) == standings_dict
