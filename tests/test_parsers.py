@@ -1,17 +1,27 @@
 import pytest
+from pytest import fixture
 
-from predthread.parsers import first_two_ints_in_comment, markdown_to_standings
+from predthread.parsers import first_two_ints_in_comment, standings_dict_from_self_text
 
 __author__ = "Julian"
 __copyright__ = "Julian"
 __license__ = "MIT"
 
+labelled_comments = (
+    ((1, 2), "1 - 2. Saints are going down. Could loose by 8 goals"),
+    ((3, 0), "Everton 3 Saints 0. I'm 100% positive."),
+    ((3, 0), "Everton 3 Saints 0"),
+)
 
-def test_first_two_ints_in_comment():
-    assert first_two_ints_in_comment("1 - 2. Saints are going down. Could loose by 8 goals") == ["1", "2"]
+@fixture(params=labelled_comments)
+def comment_case(request):
+    return {"correct_ints": request.param[0], "comment_text": request.param[1]}
+
+def test_first_two_ints_in_comment(comment_case):
+    assert first_two_ints_in_comment(comment_case["comment_text"]) == comment_case["correct_ints"]
 
 
-def test_markdown_to_standings():
+def test_standings_dict_from_self_text():
     markdown_str = """
     # Home - Away Format
 
@@ -42,4 +52,4 @@ def test_markdown_to_standings():
         "oldredstang66": 11,
         "lakermamba1999": 10,
     }
-    assert markdown_to_standings(markdown_str) == standings
+    assert standings_dict_from_self_text(markdown_str) == standings

@@ -7,10 +7,10 @@ def first_two_ints_in_comment(comment: str) -> Optional[tuple[int]]:
     if len(ints_in_comment) < 2:
         return None
     else:
-        return ints_in_comment[:2]
+        return tuple(int(x) for x in ints_in_comment[:2])
 
 
-def markdown_to_standings(markdown_string: str) -> dict[str, int]:
+def standings_dict_from_self_text(markdown_string: str) -> dict[str, int]:
     lines = markdown_string.strip().split("\n")
     return _standings_from_lines(_after_header_line(lines))
 
