@@ -18,6 +18,7 @@ finally:
 from .predthread import get_predictions, get_standings
 from . import parse
 from . import reddit
+from . import comment_filters
 from .match_result import MatchResult
 from .reddit import (
     open_thread,
