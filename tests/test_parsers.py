@@ -62,3 +62,33 @@ labelled_self_texts = (
 @pytest.mark.parametrize("standings_dict,self_text", labelled_self_texts)
 def test_standings_dict_from_self_text(standings_dict, self_text):
     assert standings(self_text) == standings_dict
+
+labelled_self_texts_new_format = (
+    (
+        {
+            "mcsgwigga": {"Points": 14, "PointsGained": 3, "Exacts": 4, "Corrects": 2, "Wrongs": 8},
+            "BlameTibor": {"Points": 13, "PointsGained": 0, "Exacts": 2, "Corrects": 7, "Wrongs": 9},
+            "Seph_che": {"Points": 13, "PointsGained": 1, "Exacts": 3, "Corrects": 4, "Wrongs": 10}
+        },
+        """
+    # Home - Away Format
+
+    Comment like "2 - 1. ⛏️⛏️⛏️"
+
+    Get you  predictions in one hour before kickoff, before lineups are posted.
+
+    # Standings
+
+    User|Points
+    :--|:--|:--
+    mcsgwigga | 14 | 3 | 4 | 2 | 8
+    BlameTibor | 13 | 0 | 2 | 7 | 9
+    Seph_che | 13 | 1 | 3 | 4 | 10
+    """,
+    ),
+)
+
+
+@pytest.mark.parametrize("standings_dict,self_text", labelled_self_texts_new_format)
+def test_standings_dict_from_self_text_new(standings_dict, self_text):
+    assert standings(self_text) == standings_dict

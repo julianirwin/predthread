@@ -4,7 +4,7 @@ Funcitons associated with parsing text into data
 
 
 import re
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Any
 
 from .match_result import MatchResult
 
@@ -39,11 +39,25 @@ def _after_header_line(lines: Sequence[str]) -> Sequence[str]:
         return _after_header_line(lines[1:])
 
 
-def _standings_from_lines(lines: Sequence[str]) -> dict[str, int]:
+def _standings_from_lines(lines: Sequence[str]) -> dict[str, Any]:
+    """
+    Old Format: author -> points 
+    New Format author -> points, points_gained, exacts, corrects, guesses
+    """
     standings = {}
     for line in lines:
-        author, points = _without_spaces(line).split("|")
-        standings[author] = int(points)
+        try:
+            author, points = _without_spaces(line).split("|")
+            standings[author] = int(points)
+        except ValueError:
+            author, points, points_gained, exacts, corrects, wrongs = _without_spaces(line).split("|")
+            standings[author] = {
+                "Points": int(points),
+                "PointsGained": int(points_gained),
+                "Exacts": int(exacts),
+                "Corrects": int(corrects),
+                "Wrongs": int(wrongs),
+            }
     return standings
 
 
