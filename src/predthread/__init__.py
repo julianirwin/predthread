@@ -15,7 +15,7 @@ except PackageNotFoundError:  # pragma: no cover
 finally:
     del version, PackageNotFoundError
 
-from .predthread import get_predictions, get_standings, update_standings_basic, update_standings_detailed
+from .predthread import get_predictions, get_standings, update_standings
 from . import parse
 from . import reddit
 from . import comment_filters

@@ -5,12 +5,19 @@ Funcitons associated with parsing text into data
 
 import re
 from typing import Optional, Sequence, Any
+import pandas as pd
 
 from .match_result import MatchResult
 
 
-def predictions(comments: dict[str, str]) -> dict[str, MatchResult]:
-    return {username: _predicted_match_result(comment) for username, comment in comments.items()}
+def predictions(comments: dict[str, str]) -> pd.DataFrame:
+    return pd.DataFrame.from_dict(
+        {username: _result_and_comment_dict(comment) for username, comment in comments.items()}, orient="Index"
+    )
+
+
+def _result_and_comment_dict(comment: str) -> dict[str, Any]:
+    return {"Comment": comment, "Prediction": _predicted_match_result(comment)}
 
 
 def _predicted_match_result(comment: str) -> MatchResult:
@@ -39,9 +46,9 @@ def _after_header_line(lines: Sequence[str]) -> Sequence[str]:
         return _after_header_line(lines[1:])
 
 
-def _standings_from_lines(lines: Sequence[str]) -> dict[str, Any]:
+def _standings_from_lines(lines: Sequence[str]) -> pd.DataFrame:
     """
-    Old Format: author -> points 
+    Old Format: author -> points
     New Format author -> points, points_gained, exacts, corrects, guesses
     """
     standings = {}
@@ -58,7 +65,7 @@ def _standings_from_lines(lines: Sequence[str]) -> dict[str, Any]:
                 "Corrects": int(corrects),
                 "Wrongs": int(wrongs),
             }
-    return standings
+    return pd.DataFrame.from_dict(standings, orient="Index")
 
 
 def _without_spaces(s):

@@ -11,6 +11,7 @@ from praw.models.reddit.comment import Comment
 from typing import Sequence, Callable, Any
 from collections import defaultdict
 from copy import deepcopy
+import pandas as pd
 
 default_localtime_cutoff = datetime.datetime(9999, 1, 1, 0, 0, 0)
 
@@ -24,11 +25,10 @@ standings (new):
 """
 
 
-def get_standings(thread: Submission) -> dict:
+def get_standings(thread: Submission) -> pd.DataFrame:
     return parse.standings(reddit.thread_self_text(thread))
 
 
-# Could have this just create a dataframe, that way columns can be easily added and removed, filtered
 def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datetime = default_localtime_cutoff) -> dict:
     comments = reddit.thread_top_level_comments(thread)
     conditions = (comment_filters.comment_author_not_none, comment_filters.comment_created_before(comment_localtime_cutoff))
@@ -37,22 +37,18 @@ def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datet
     return parse.predictions(comments_dict)
 
 
-def update_standings_basic(standings: dict[str, int], predictions: dict[str, MatchResult], true_result: MatchResult):
-    standings = defaultdict(lambda: 0, standings)
-    for author, predicted_result in predictions.items():
-        standings[author] = standings[author] + _points_earned(predicted_result, true_result)
-
-
-def update_standings_detailed(standings_detailed: dict[str, dict], predictions: dict[str, MatchResult], true_result: MatchResult):
+def update_standings(standings: pd.DataFrame, predictions: pd.DataFrame, true_result: MatchResult):
     zero_row = {"Points": 0, "PointsGained": 0, "Exacts": 0, "Corrects": 0, "Wrongs": 0}
-    updated_standings = defaultdict(lambda: deepcopy(zero_row), deepcopy(standings_detailed))
+    predictions_dict = predictions.to_dict(orient="Index")
+    standings_dict = standings.to_dict(orient="Index")
+    updated_standings = defaultdict(lambda: deepcopy(zero_row), standings_dict)
     result_type = {0: "Wrongs", 1: "Corrects", 3: "Exacts"}
-    for author, predicted_result in predictions.items():
-        points_earned = _points_earned(predicted_result, true_result)
+    for author, prediction in predictions_dict.items():
+        points_earned = _points_earned(prediction["Prediction"], true_result)
         updated_standings[author]["Points"] += points_earned
         updated_standings[author]["PointsGained"] = points_earned
         updated_standings[author][result_type[points_earned]] += 1
-    return updated_standings
+    return pd.DataFrame.from_dict(updated_standings, orient="Index")
 
 
 def _points_earned(predicted_result: MatchResult, true_result: MatchResult):
