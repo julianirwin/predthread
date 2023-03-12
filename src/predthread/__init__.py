@@ -20,6 +20,7 @@ from . import parse
 from . import reddit
 from . import comment_filters
 from .match_result import MatchResult
+from . import report
 from .reddit import (
     open_thread,
     open_reddit,
