@@ -7,9 +7,6 @@ import predthread as pt
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-__author__ = "Julian"
-__copyright__ = "Julian"
-__license__ = "MIT"
 
 labelled_comments = (
     ((1, 2), "1 - 2. Saints are going down. Could loose by 8 goals"),
@@ -54,7 +51,7 @@ labelled_self_texts_new_format = (
 
 
 @pytest.mark.parametrize("standings_dict,self_text", labelled_self_texts_new_format)
-def test_standings_dict_from_self_text_new(standings_dict, self_text):
+def test_standings_dict_from_self_text(standings_dict, self_text):
     assert_frame_equal(standings(self_text), pd.DataFrame.from_dict(standings_dict, orient="Index"))
 
 
@@ -98,5 +95,7 @@ comments_and_predictions = (
 def test_parse_predictions(comments_dict, true_predictions_dict):
     test_predictions_df = pt.parse.predictions(comments_dict)
     test_predictions_dict = test_predictions_df["Prediction"].to_dict()
-    true_predictions_dict = {author: MatchResult(*prediction_tuple) for author, prediction_tuple in true_predictions_dict.items()}
+    true_predictions_dict = {
+        author: MatchResult(*prediction_tuple) for author, prediction_tuple in true_predictions_dict.items()
+    }
     assert test_predictions_dict == true_predictions_dict
