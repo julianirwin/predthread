@@ -9,7 +9,7 @@ from typing import Optional, Sequence, Any
 from .match_result import MatchResult
 
 
-def predictions(comments: dict[str, str]):
+def predictions(comments: dict[str, str]) -> dict[str, MatchResult]:
     return {username: _predicted_match_result(comment) for username, comment in comments.items()}
 
 

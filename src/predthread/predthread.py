@@ -10,6 +10,7 @@ from praw.models.reddit.submission import Submission
 from praw.models.reddit.comment import Comment
 from typing import Sequence, Callable, Any
 from collections import defaultdict
+from copy import deepcopy
 
 default_localtime_cutoff = datetime.datetime(9999, 1, 1, 0, 0, 0)
 
@@ -26,6 +27,7 @@ standings (new):
 def get_standings(thread: Submission) -> dict:
     return parse.standings(reddit.thread_self_text(thread))
 
+
 # Could have this just create a dataframe, that way columns can be easily added and removed, filtered
 def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datetime = default_localtime_cutoff) -> dict:
     comments = reddit.thread_top_level_comments(thread)
@@ -40,15 +42,18 @@ def update_standings_basic(standings: dict[str, int], predictions: dict[str, Mat
     for author, predicted_result in predictions.items():
         standings[author] = standings[author] + _points_earned(predicted_result, true_result)
 
-def update_standings_detailed(standings, predictions, true_result: MatchResult):
+
+def update_standings_detailed(standings_detailed: dict[str, dict], predictions: dict[str, MatchResult], true_result: MatchResult):
     zero_row = {"Points": 0, "PointsGained": 0, "Exacts": 0, "Corrects": 0, "Wrongs": 0}
-    standings = defaultdict(lambda: zero_row, standings)
+    updated_standings = defaultdict(lambda: deepcopy(zero_row), deepcopy(standings_detailed))
     result_type = {0: "Wrongs", 1: "Corrects", 3: "Exacts"}
     for author, predicted_result in predictions.items():
         points_earned = _points_earned(predicted_result, true_result)
-        standings[author]["Points"] += points_earned
-        standings[author]["PointsGained"] = points_earned
-        standings[author][result_type[points_earned]] += 1
+        updated_standings[author]["Points"] += points_earned
+        updated_standings[author]["PointsGained"] = points_earned
+        updated_standings[author][result_type[points_earned]] += 1
+    return updated_standings
+
 
 def _points_earned(predicted_result: MatchResult, true_result: MatchResult):
         if not predicted_result:

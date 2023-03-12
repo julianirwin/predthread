@@ -2,6 +2,8 @@ import pytest
 from pytest import fixture
 
 from predthread.parse import _first_two_ints_in_comment, standings
+from predthread import MatchResult
+import predthread as pt
 
 __author__ = "Julian"
 __copyright__ = "Julian"
@@ -79,8 +81,8 @@ labelled_self_texts_new_format = (
 
     # Standings
 
-    User|Points
-    :--|:--|:--
+    User|Points|Earned|Exacts|Corrects|Wrongs
+    :--|:--|:--|:--|:--|:--|:--
     mcsgwigga | 14 | 3 | 4 | 2 | 8
     BlameTibor | 13 | 0 | 2 | 7 | 9
     Seph_che | 13 | 1 | 3 | 4 | 10
