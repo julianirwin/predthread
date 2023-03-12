@@ -4,6 +4,7 @@ from . import comment_filters
 from .match_result import MatchResult
 
 import datetime
+
 # import pandas as pd
 from praw.reddit import Reddit
 from praw.models.reddit.submission import Submission
@@ -31,7 +32,10 @@ def get_standings(thread: Submission) -> pd.DataFrame:
 
 def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datetime = default_localtime_cutoff) -> dict:
     comments = reddit.thread_top_level_comments(thread)
-    conditions = (comment_filters.comment_author_not_none, comment_filters.comment_created_before(comment_localtime_cutoff))
+    conditions = (
+        comment_filters.comment_author_not_none,
+        comment_filters.comment_created_before(comment_localtime_cutoff),
+    )
     valid_comments = comment_filters.filtered_comments(comments, conditions)
     comments_dict = reddit.comments_dict(valid_comments)
     return parse.predictions(comments_dict)
@@ -52,11 +56,11 @@ def update_standings(standings: pd.DataFrame, predictions: pd.DataFrame, true_re
 
 
 def _points_earned(predicted_result: MatchResult, true_result: MatchResult):
-        if not predicted_result:
-            return 0
-        elif predicted_result.exactly_equals(true_result):
-            return 3
-        elif predicted_result.same_result_as(true_result):
-            return 1
-        else:
-            return 0
+    if not predicted_result:
+        return 0
+    elif predicted_result.exactly_equals(true_result):
+        return 3
+    elif predicted_result.same_result_as(true_result):
+        return 1
+    else:
+        return 0
