@@ -6,15 +6,14 @@ import datetime
 from typing import Sequence
 from functools import reduce
 from operator import and_
-from .api_keys import client_id, client_secret, user_agent
 import praw
 from praw.models.reddit.submission import Submission
 from praw.models.reddit.comment import Comment
 from praw.reddit import Reddit
 
 
-def open_reddit() -> Reddit:
-    return praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
+def open_reddit(praw_client_id: str, praw_client_secret: str, praw_user_agent: str) -> Reddit:
+    return praw.Reddit(client_id=praw_client_id, client_secret=praw_client_secret, user_agent=praw_user_agent)
 
 
 def open_thread(reddit, url) -> Submission:

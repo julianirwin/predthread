@@ -14,10 +14,33 @@
 
 # predthread
 
-> Add a short description here!
+> Tool for easily running a score prediction game on your team's subreddit!
 
-A longer description of your project goes here...
+The prediction game that predthread implements is a fun and simple game to add to any football team's subreddit. Users post predictions in the thread each week. They are awarded 3 points for an exactly correct prediction, 1 point for matching the result (W/L/D) but not the exact score, and 0 points for an incorrect result. These tools make it easy to scrape and parse prediction comments from the reddit thread, and generate a standings table that tracks each users points tally throughout the season.
 
+### Predthread relies on a few simple ideas and methods
+
+- The game moderator posts a weekly prediction game thread, typically a day or two before the match. Users post predictions as comments.
+
+- After the match, [PRAW](https://praw.readthedocs.io/en/stable/) is used to scrape comments.
+
+- Scraped comments are parsed into prediction data by a very simple regex pattern and dumped into a pandas DataFrame.
+
+- The prediction DataFrame is combined with the standings table (points tally from all previous matches) into an updated standings table, also a DataFrame.
+
+- The updated standings table is printed to a markdown string in the Reddit table format. The standings are posted in the prediction game thread for the next week. They both inform the users of their standings, and serve as permanent storage for the standings data.
+
+### More details:
+
+- There is a feature to ignore comments made after a certain time cutoff. Typically the cutoff is set by the game moderator to one hour before kickoff, before team lineups are posted.
+
+- A service such as [Later for Reddit](laterforreddit.com) can be used to schedule posts.
+
+### Simplified examples
+
+- See the examples/ folder.
+
+- See the test subreddit [predthreadtest](https://www.reddit.com/r/predthreadtest/)
 
 <!-- pyscaffold-notes -->
 
