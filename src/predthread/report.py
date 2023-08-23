@@ -8,4 +8,4 @@ def standings_to_markdown(standings: pd.DataFrame):
     for author, row in standings[["Points", "PointsGained", "Exacts", "Corrects", "Wrongs"]].iterrows():
         data_columns_string = " | ".join([str(e) for e in row.to_list()])
         output_string += f"{author} | {data_columns_string}\n"
-    print(output_string)
+    return output_string
