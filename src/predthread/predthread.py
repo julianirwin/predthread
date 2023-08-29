@@ -45,6 +45,8 @@ def update_standings(standings: pd.DataFrame, predictions: pd.DataFrame, true_re
     zero_row = {"Points": 0, "PointsGained": 0, "Exacts": 0, "Corrects": 0, "Wrongs": 0}
     predictions_dict = predictions.to_dict(orient="Index")
     standings_dict = standings.to_dict(orient="Index")
+    for k, v in standings_dict.items():
+        standings_dict[k]["PointsGained"] = 0
     updated_standings = defaultdict(lambda: deepcopy(zero_row), standings_dict)
     result_type = {0: "Wrongs", 1: "Corrects", 3: "Exacts"}
     for author, prediction in predictions_dict.items():
