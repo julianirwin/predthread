@@ -10,10 +10,17 @@ def comment_author_not_none(comment) -> bool:
 
 def comment_created_before(threshold_datetime) -> Callable[[Comment], bool]:
     def _comment_created_before(comment):
-        comment_time = threshold_datetime.fromtimestamp(comment.created_utc)
+        comment_time = threshold_datetime.fromtimestamp(_comment_last_edit_time(comment))
         return comment_time <= threshold_datetime
 
     return _comment_created_before
+
+
+def _comment_last_edit_time(comment):
+    if comment.edited:
+        return comment.edited
+    else:
+        return comment.created_utc
 
 
 def filtered_comments(comments: Sequence[Comment], conditions: Sequence[Callable[[Comment], bool]]):
