@@ -61,6 +61,7 @@ def _standings_from_lines(lines: Sequence[str]) -> pd.DataFrame:
             standings[author] = int(points)
         except ValueError:
             author, points, points_gained, exacts, corrects, wrongs = _without_spaces(line).split("|")
+            author = _untag_if_needed(author)
             standings[author] = {
                 "Points": int(points),
                 "PointsGained": int(points_gained),
@@ -77,3 +78,10 @@ def _without_spaces(s):
 
 def _is_header_line(line):
     return "User|Points" in _without_spaces(line)
+
+
+def _untag_if_needed(author: str):
+    if author.startswith("u/"):
+        return author[2:]
+    else:
+        return author
