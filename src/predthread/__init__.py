@@ -25,3 +25,4 @@ from .reddit import (
     open_thread,
     open_reddit,
 )
+from .fbref import match_metadata
