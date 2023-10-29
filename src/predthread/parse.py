@@ -60,7 +60,10 @@ def _standings_from_lines(lines: Sequence[str]) -> pd.DataFrame:
             author, points = _without_spaces(line).split("|")
             standings[author] = int(points)
         except ValueError:
-            author, points, points_gained, exacts, corrects, wrongs = _without_spaces(line).split("|")
+            try:
+                author, points, points_gained, exacts, corrects, wrongs = _without_spaces(line).split("|")
+            except ValueError:
+                place, author, points, points_gained, exacts, corrects, wrongs = _without_spaces(line).split("|")
             author = _untag_if_needed(author)
             standings[author] = {
                 "Points": int(points),
