@@ -49,3 +49,11 @@ def append_match_metadata(root: Path, match_metadata: dict):
 
 def standings_after_df(root: Path, match_id: int):
     return pd.read_csv(root / "standings" / f'after-match-{match_id}.csv').sort_values("Points")
+
+def download_predictions(root, match_id: int) -> pd.DataFrame:
+    # FOR PREVIOUS WEEK?
+    # Get the url for the match id
+    # Open the thread
+    # Get the predictions
+    # Save predictions to csv in proper location
+    pass

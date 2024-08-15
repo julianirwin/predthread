@@ -11,16 +11,19 @@ from .match_result import MatchResult
 
 
 def predictions(comments: dict[str, str]) -> pd.DataFrame:
-    return pd.DataFrame.from_dict(
+    df = pd.DataFrame.from_dict(
         {username: _result_and_comment_dict(comment) for username, comment in comments.items() if _is_valid_comment(comment)}, orient="Index"
     )
+    df.index.name = "UserName"
+    return df
 
 def _is_valid_comment(comment: str) -> bool:
     return _first_two_ints_in_comment(comment) is not None
 
 
 def _result_and_comment_dict(comment: str) -> dict[str, Any]:
-    return {"Comment": comment, "Prediction": _predicted_match_result(comment)}
+    prediction = _predicted_match_result(comment)
+    return {"Comment": comment, "PredictedHomeGoals": prediction.home_goals, "PredictedAwayGoals": prediction.away_goals}
 
 
 def _predicted_match_result(valid_comment: str) -> MatchResult:
