@@ -1,0 +1,31 @@
+{
+    "MatchId": {
+        "0": {
+            "MatchWeek": 1,
+            "HomeClub": "Newcastle Utd",
+            "AwayClub": "Southampton",
+            "HomeGoals": "",
+            "AwayGoals": "",
+            "MatchTimeUtc": "2024-08-17T15:00:00Z",
+            "ThreadUrl": ""
+        },
+        "1": {
+            "MatchWeek": 2,
+            "HomeClub": "Southampton",
+            "AwayClub": "Nott'ham Forest",
+            "HomeGoals": "",
+            "AwayGoals": "",
+            "MatchTimeUtc": "2024-08-24T15:00:00Z",
+            "ThreadUrl": ""
+        },
+        "2": {
+            "MatchWeek": 3,
+            "HomeClub": "Brentford",
+            "AwayClub": "Southampton",
+            "HomeGoals": "",
+            "AwayGoals": "",
+            "MatchTimeUtc": "2024-08-31T15:00:00Z",
+            "ThreadUrl": ""
+        }
+    }
+}
