@@ -30,7 +30,7 @@ def get_standings(thread: Submission) -> pd.DataFrame:
     return parse.standings(reddit.thread_self_text(thread))
 
 
-def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datetime = default_localtime_cutoff) -> dict:
+def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datetime = default_localtime_cutoff) -> pd.DataFrame:
     comments = reddit.thread_top_level_comments(thread)
     conditions = (
         comment_filters.comment_author_not_none,
@@ -41,20 +41,28 @@ def get_predictions(thread: Submission, comment_localtime_cutoff: datetime.datet
     return parse.predictions(comments_dict)
 
 
-def update_standings(standings: pd.DataFrame, predictions: pd.DataFrame, true_result: MatchResult):
-    zero_row = {"Points": 0, "PointsGained": 0, "Exacts": 0, "Corrects": 0, "Wrongs": 0}
-    predictions_dict = predictions.to_dict(orient="Index")
+def update_standings(standings: pd.DataFrame, predictions: pd.DataFrame, true_result: MatchResult) -> dict:
+    zero_row = {"Points": 0, "PointsGained": 0, "Streak": 0, "Exacts": 0, "Corrects": 0, "Wrongs": 0, "MaxStreak": 0}
     standings_dict = standings.to_dict(orient="Index")
-    for k, v in standings_dict.items():
-        standings_dict[k]["PointsGained"] = 0
+    for author in standings_dict.keys():
+        standings_dict[author]["PointsGained"] = 0
     updated_standings = defaultdict(lambda: deepcopy(zero_row), standings_dict)
     result_type = {0: "Wrongs", 1: "Corrects", 3: "Exacts"}
-    for author, prediction in predictions_dict.items():
-        points_earned = _points_earned(prediction["Prediction"], true_result)
+    for author, prediction in predictions.iterrows():
+        predicted_result = MatchResult(prediction["PredictedHomeGoals"], prediction["PredictedAwayGoals"])
+        points_earned = _points_earned(predicted_result, true_result)
         updated_standings[author]["Points"] += points_earned
         updated_standings[author]["PointsGained"] = points_earned
         updated_standings[author][result_type[points_earned]] += 1
-    return pd.DataFrame.from_dict(updated_standings, orient="Index")
+        if points_earned > 0:
+            updated_standings[author]["Streak"] += points_earned
+        else:
+            updated_standings[author]["Streak"] = 0
+        if updated_standings[author]["Streak"] > updated_standings[author]["MaxStreak"]:
+            updated_standings[author]["MaxStreak"] = updated_standings[author]["Streak"]
+    df = pd.DataFrame.from_dict(updated_standings, orient="index")
+    df.index.name = "UserName"
+    return df.sort_values(["Points", "PointsGained", "Exacts", "Streak"], ascending=False)
 
 
 def _points_earned(predicted_result: MatchResult, true_result: MatchResult):

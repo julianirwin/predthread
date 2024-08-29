@@ -4,19 +4,19 @@
             "MatchWeek": 1,
             "HomeClub": "Newcastle Utd",
             "AwayClub": "Southampton",
-            "HomeGoals": "",
-            "AwayGoals": "",
+            "HomeGoals": "1",
+            "AwayGoals": "0",
             "MatchTimeUtc": "2024-08-17T15:00:00Z",
-            "ThreadUrl": ""
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1etdj1p/prediction_thread_match_1_newcastle_southampton/"
         },
         "1": {
             "MatchWeek": 2,
             "HomeClub": "Southampton",
             "AwayClub": "Nott'ham Forest",
-            "HomeGoals": "",
-            "AwayGoals": "",
+            "HomeGoals": "0",
+            "AwayGoals": "1",
             "MatchTimeUtc": "2024-08-24T15:00:00Z",
-            "ThreadUrl": ""
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1eys69x/prediction_thread_match_2_southampton_forest/"
         },
         "2": {
             "MatchWeek": 3,
