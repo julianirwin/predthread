@@ -22,9 +22,18 @@
             "MatchWeek": 3,
             "HomeClub": "Brentford",
             "AwayClub": "Southampton",
+            "HomeGoals": "3",
+            "AwayGoals": "1",
+            "MatchTimeUtc": "2024-08-31T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1f4j1xz/prediction_thread_match_3_brentford_vs_southampton/"
+        },
+        "3": {
+            "MatchWeek": 4,
+            "HomeClub": "Southampton",
+            "AwayClub": "Manchester Utd",
             "HomeGoals": "",
             "AwayGoals": "",
-            "MatchTimeUtc": "2024-08-31T15:00:00Z",
+            "MatchTimeUtc": "2024-09-14T12:30:00Z",
             "ThreadUrl": ""
         }
     }
