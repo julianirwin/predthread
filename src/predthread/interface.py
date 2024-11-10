@@ -36,7 +36,7 @@ def fbref_match_metadata(root: Path, match_week: id) -> dict:
 
 def _next_match_id(match_metadata: dict):
     try:
-        return str(int(max(match_metadata["MatchId"].keys())) + 1)
+        return max(map(int, match_metadata["MatchId"].keys())) + 1
     except ValueError:
         return "0"
 
