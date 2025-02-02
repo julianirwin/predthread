@@ -103,27 +103,135 @@
             "MatchWeek": 12,
             "HomeClub": "Southampton",
             "AwayClub": "Liverpool",
-            "HomeGoals": "",
-            "AwayGoals": "",
+            "HomeGoals": "2",
+            "AwayGoals": "3",
             "MatchTimeUtc": "2024-11-24T14:00:00Z",
-            "ThreadUrl": ""
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1gxmhuc/prediction_thread_match_12_southampton_vs/"
         },
         "12": {
             "MatchWeek": 13,
             "HomeClub": "Brighton",
             "AwayClub": "Southampton",
-            "HomeGoals": "",
-            "AwayGoals": "",
+            "HomeGoals": "1",
+            "AwayGoals": "1",
             "MatchTimeUtc": "2024-11-29T20:00:00Z",
-            "ThreadUrl": ""
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1h1jhia/prediction_thread_match_13_brighton_vs_southampton/"
         },
         "13": {
             "MatchWeek": 14,
             "HomeClub": "Southampton",
             "AwayClub": "Chelsea",
+            "HomeGoals": "1",
+            "AwayGoals": "5",
+            "MatchTimeUtc": "2024-12-04T19:30:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1h5oknw/prediction_thread_match_14_southampton_vs_chelsea/"
+        },
+        "14": {
+            "MatchWeek": 15,
+            "HomeClub": "Aston Villa",
+            "AwayClub": "Southampton",
+            "HomeGoals": "1",
+            "AwayGoals": "0",
+            "MatchTimeUtc": "2024-12-07T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1h89fh1/prediction_thread_match_15_aston_villa_vs/"
+        },
+        "15": {
+            "MatchWeek": 16,
+            "HomeClub": "Southampton",
+            "AwayClub": "Tottenham",
+            "HomeGoals": "0",
+            "AwayGoals": "5",
+            "MatchTimeUtc": "2024-12-15T19:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1hdojbr/prediction_thread_match_16_southampton_vs/"
+        },
+        "16": {
+            "MatchWeek": 17,
+            "HomeClub": "Fulham",
+            "AwayClub": "Southampton",
+            "HomeGoals": "0",
+            "AwayGoals": "0",
+            "MatchTimeUtc": "2024-12-22T14:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1hixh8t/prediction_thread_match_17_fulham_vs_southampton/"
+        },
+        "17": {
+            "MatchWeek": 18,
+            "HomeClub": "Southampton",
+            "AwayClub": "West Ham",
+            "HomeGoals": "1",
+            "AwayGoals": "0",
+            "MatchTimeUtc": "2024-12-26T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1hlg0wa/prediction_thread_match_18_southampton_vs_west_ham/"
+        },
+        "18": {
+            "MatchWeek": 19,
+            "HomeClub": "Crystal Palace",
+            "AwayClub": "Southampton",
+            "HomeGoals": "2",
+            "AwayGoals": "1",
+            "MatchTimeUtc": "2024-12-29T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1hnhnxk/prediction_thread_match_19_crystal_palace_vs/"
+        },
+        "19": {
+            "MatchWeek": 20,
+            "HomeClub": "Southampton",
+            "AwayClub": "Brentford",
+            "HomeGoals": "0",
+            "AwayGoals": "5",
+            "MatchTimeUtc": "2025-01-04T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1hsakv5/prediction_thread_match_20_southampton_vs/"
+        },
+        "20": {
+            "MatchWeek": 21,
+            "HomeClub": "Manchester Utd",
+            "AwayClub": "Southampton",
+            "HomeGoals": "3",
+            "AwayGoals": "1",
+            "MatchTimeUtc": "2025-01-16T20:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1i26vhw/prediction_thread_match_21_manchester_united_vs/"
+        },
+        "21": {
+            "MatchWeek": 22,
+            "HomeClub": "Nott'ham Forest",
+            "AwayClub": "Southampton",
+            "HomeGoals": "3",
+            "AwayGoals": "2",
+            "MatchTimeUtc": "2025-01-19T14:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1i3xqcf/prediction_thread_match_22_nottham_forest_vs/"
+        },
+        "22": {
+            "MatchWeek": 23,
+            "HomeClub": "Southampton",
+            "AwayClub": "Newcastle Utd",
+            "HomeGoals": "1",
+            "AwayGoals": "3",
+            "MatchTimeUtc": "2025-01-25T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1i8m0dj/prediction_thread_match_23_southampton_vs/"
+        },
+        "23": {
+            "MatchWeek": 24,
+            "HomeClub": "Ipswich Town",
+            "AwayClub": "Southampton",
+            "HomeGoals": "1",
+            "AwayGoals": "2",
+            "MatchTimeUtc": "2025-02-01T15:00:00Z",
+            "ThreadUrl": "https://www.reddit.com/r/SaintsFC/comments/1ierjpt/comment/macf4c9/?context=3"
+        },
+        "24": {
+            "MatchWeek": 25,
+            "HomeClub": "Southampton",
+            "AwayClub": "Bournemouth",
             "HomeGoals": "",
             "AwayGoals": "",
-            "MatchTimeUtc": "2024-12-04T19:30:00Z",
+            "MatchTimeUtc": "2025-02-15T15:00:00Z",
+            "ThreadUrl": ""
+        },
+        "25": {
+            "MatchWeek": 26,
+            "HomeClub": "Southampton",
+            "AwayClub": "Brighton",
+            "HomeGoals": "",
+            "AwayGoals": "",
+            "MatchTimeUtc": "2025-02-22T15:00:00Z",
             "ThreadUrl": ""
         }
     }
